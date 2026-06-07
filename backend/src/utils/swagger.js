@@ -4,9 +4,9 @@ const options = {
     definition: {
         openapi: '3.0.0',
         info: {
-        title: 'Payroll Management System API',
-        version: '1.0.0',
-        description: 'Complete payroll management system with authentication, employee management, attendance tracking, and payroll processing'
+            title: 'Payroll Management System API',
+            version: '1.0.0',
+            description: 'Complete payroll management system with authentication, employee management, attendance tracking, and payroll processing'
         },
         servers: [
         {
