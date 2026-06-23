@@ -1,47 +1,125 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express';
-import dotenv from 'dotenv';
-import { specs } from './utils/swagger.js';
-import { errorHandler } from './middlewares/errorHandler.js';
-import { requestLogger } from './middlewares/requestLogger.js';
 
-// Routes
-import authRoutes from './routes/authRoutes.js';
-import userRoutes from './routes/userRoutes.js';
-import employeeRoutes from './routes/employeeRoutes.js';
-import payrollRoutes from './routes/payrollRoutes.js';
-import attendanceRoutes from './routes/attendanceRoutes.js';
+import logger from './shared/utils/logger.js';
+import errorHandler from './shared/middlewares/errorHandler.js';
+import requestLogger from './shared/middlewares/requestLogger.js';
+import swaggerDocument from './config/swagger.js';
+import AppError from './shared/errors/AppError.js';
 
-dotenv.config();
 
-// Create Express app
+import routes from './routes/index.js';
+
 const app = express();
 
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(morgan('dev'));
+/*
+|--------------------------------------------------------------------------
+| Security
+|--------------------------------------------------------------------------
+*/
+
+app.use(helmet());
+
+app.use(
+    cors({
+        origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
+        credentials: true,
+    })
+);
+
+/*
+|--------------------------------------------------------------------------
+| Body Parsers
+|--------------------------------------------------------------------------
+*/
+
+app.use(express.json({ limit: '10mb' }));
+
+app.use(
+    express.urlencoded({
+        extended: true,
+    })
+);
+
+/*
+|--------------------------------------------------------------------------
+| Logging
+|--------------------------------------------------------------------------
+*/
+
+app.use(
+    morgan('combined', {
+        stream: {
+            write: (message) => logger.http(message.trim()),
+        },
+    })
+);
+
 app.use(requestLogger);
 
-// Swagger Documentation
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+/*
+|--------------------------------------------------------------------------
+| Swagger
+|--------------------------------------------------------------------------
+*/
 
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/employees', employeeRoutes);
-app.use('/api/payroll', payrollRoutes);
-app.use('/api/attendance', attendanceRoutes);
+app.use(
+    '/api-docs',
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerDocument, {
+        customCss: '.swagger-ui .topbar { display: none }',
+        customSiteTitle: 'PayrollPro API Docs',
+    })
+);
 
-// Health check
+/*
+|--------------------------------------------------------------------------
+| Health Check
+|--------------------------------------------------------------------------
+*/
+
 app.get('/health', (req, res) => {
-    res.status(200).json({ status: 'OK', message: 'Server is running' });
+    res.status(200).json({
+        success: true,
+        status: 'OK',
+        environment: process.env.NODE_ENV,
+        timestamp: new Date().toISOString(),
+    });
 });
 
-// Error handling middleware (should be last)
+app.get('/error-test', (req, res, next) => {
+    next(new AppError('Test Error', 400));
+});
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+*/
+
+app.use('/api/v1', routes);
+
+/*
+|--------------------------------------------------------------------------
+| 404
+|--------------------------------------------------------------------------
+*/
+
+app.use((req, res) => {
+    res.status(404).json({
+        success: false,
+        message: `Route ${req.originalUrl} not found`,
+    });
+});
+
+/*
+|--------------------------------------------------------------------------
+| Error Handler
+|--------------------------------------------------------------------------
+*/
+
 app.use(errorHandler);
 
 export default app;
