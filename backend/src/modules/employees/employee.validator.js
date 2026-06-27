@@ -3,34 +3,24 @@ import Joi from 'joi';
 export const createEmployeeSchema = Joi.object({
   employeeNumber: Joi.string()
     .trim()
-    .required(),
+    .optional()
+    .allow('', null),
 
-  organizationId: Joi.string()
-    .required(),
+  organizationId: Joi.string().required(),
 
-  departmentId: Joi.string()
-    .required(),
+  departmentId: Joi.string().required(),
 
-  userId: Joi.string()
-    .optional(),
+  userId: Joi.string().optional(),
 
-  firstName: Joi.string()
-    .trim()
-    .required(),
+  firstName: Joi.string().trim().required(),
 
-  lastName: Joi.string()
-    .trim()
-    .required(),
+  lastName: Joi.string().trim().required(),
 
-  email: Joi.string()
-    .email()
-    .required(),
+  email: Joi.string().email().required(),
 
-  phone: Joi.string()
-    .optional(),
+  phone: Joi.string().allow('', null),
 
-  jobTitle: Joi.string()
-    .required(),
+  jobTitle: Joi.string().trim().required(),
 
   employmentType: Joi.string()
     .valid(
@@ -39,13 +29,22 @@ export const createEmployeeSchema = Joi.object({
       'CONTRACT',
       'INTERN'
     )
-    .optional(),
+    .default('FULL_TIME'),
 
   hireDate: Joi.date()
-    .required(),
+    .optional()
+    .default(() => new Date()),
 
-  dateOfBirth: Joi.date()
-    .optional(),
+  status: Joi.string()
+    .valid(
+      'ACTIVE',
+      'ON_LEAVE',
+      'SUSPENDED',
+      'TERMINATED'
+    )
+    .default('ACTIVE'),
+
+  dateOfBirth: Joi.date().optional().allow(null),
 
   gender: Joi.string()
     .valid(
@@ -55,60 +54,57 @@ export const createEmployeeSchema = Joi.object({
     )
     .optional(),
 
-  address: Joi.string()
-    .optional(),
+  address: Joi.string().allow('', null),
 
-  emergencyContactName: Joi.string()
-    .optional(),
+  emergencyContactName: Joi.string().allow('', null),
 
-  emergencyContactPhone: Joi.string()
-    .optional()
+  emergencyContactPhone: Joi.string().allow('', null)
 });
 
-export const updateEmployeeSchema =
-  Joi.object({
-    departmentId: Joi.string(),
+export const updateEmployeeSchema = Joi.object({
+  organizationId: Joi.string(),
 
-    userId: Joi.string(),
+  departmentId: Joi.string(),
 
-    firstName: Joi.string(),
+  userId: Joi.string(),
 
-    lastName: Joi.string(),
+  firstName: Joi.string(),
 
-    email: Joi.string().email(),
+  lastName: Joi.string(),
 
-    phone: Joi.string(),
+  email: Joi.string().email(),
 
-    jobTitle: Joi.string(),
+  phone: Joi.string(),
 
-    employmentType: Joi.string().valid(
-      'FULL_TIME',
-      'PART_TIME',
-      'CONTRACT',
-      'INTERN'
-    ),
+  jobTitle: Joi.string(),
 
-    status: Joi.string().valid(
-      'ACTIVE',
-      'ON_LEAVE',
-      'SUSPENDED',
-      'TERMINATED'
-    ),
+  employmentType: Joi.string().valid(
+    'FULL_TIME',
+    'PART_TIME',
+    'CONTRACT',
+    'INTERN'
+  ),
 
-    hireDate: Joi.date(),
+  status: Joi.string().valid(
+    'ACTIVE',
+    'ON_LEAVE',
+    'SUSPENDED',
+    'TERMINATED'
+  ),
 
-    dateOfBirth: Joi.date(),
+  hireDate: Joi.date(),
 
-    gender: Joi.string().valid(
-      'MALE',
-      'FEMALE',
-      'OTHER'
-    ),
+  dateOfBirth: Joi.date(),
 
-    address: Joi.string(),
+  gender: Joi.string().valid(
+    'MALE',
+    'FEMALE',
+    'OTHER'
+  ),
 
-    emergencyContactName: Joi.string(),
+  address: Joi.string(),
 
-    emergencyContactPhone: Joi.string()
-  })
-    .min(1);
+  emergencyContactName: Joi.string(),
+
+  emergencyContactPhone: Joi.string()
+}).min(1);

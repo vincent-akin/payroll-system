@@ -1,24 +1,27 @@
+// backend/src/config/database.js
 import mongoose from 'mongoose';
 import logger from '../shared/utils/logger.js';
 
 const connectDB = async () => {
-    try {
-        const conn = await mongoose.connect(process.env.MONGODB_URI);
-
-        logger.info(`✅ MongoDB connected: ${conn.connection.host}`);
-
-        mongoose.connection.on('error', (error) => {
-            logger.error(`MongoDB connection error: ${error.message}`);
-        });
-
-        mongoose.connection.on('disconnected', () => {
-            logger.warn('MongoDB disconnected');
-        });
-
-    } catch (error) {
-        logger.error(`❌ MongoDB connection failed: ${error.message}`);
-        process.exit(1);
+  try {
+    const mongoURI = process.env.MONGODB_URI;
+    
+    if (!mongoURI) {
+      throw new Error('MONGODB_URI is not defined in environment variables');
     }
+    
+    logger.info('Attempting to connect to MongoDB Atlas...');
+    
+    const conn = await mongoose.connect(mongoURI);
+    
+    logger.info(`✅ MongoDB Connected: ${conn.connection.host}`);
+    logger.info(`📊 Database: ${conn.connection.db.databaseName}`);
+    
+    return conn;
+  } catch (error) {
+    logger.error(`❌ Error connecting to MongoDB: ${error.message}`);
+    process.exit(1);
+  }
 };
 
 export default connectDB;

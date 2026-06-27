@@ -1,3 +1,4 @@
+// backend/src/modules/auth/auth.controller.js
 import * as authService from './auth.service.js';
 
 export const login = async (req, res, next) => {
@@ -33,7 +34,8 @@ export const refresh = async (req, res, next) => {
 
 export const me = async (req, res, next) => {
     try {
-        const user = await authService.me(req.user.userId);
+        // Fix: Use req.user.id instead of req.user.userId
+        const user = await authService.me(req.user.id);
 
         res.status(200).json({
             success: true,
@@ -46,8 +48,9 @@ export const me = async (req, res, next) => {
 
 export const changePassword = async (req, res, next) => {
     try {
+        // Fix: Use req.user.id instead of req.user.userId
         await authService.changePassword(
-            req.user.userId,
+            req.user.id,
             req.body.currentPassword,
             req.body.newPassword
         );

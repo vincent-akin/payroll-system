@@ -1,3 +1,4 @@
+// backend/src/shared/middlewares/permissions.middleware.js
 import AppError from '../errors/AppError.js';
 
 const permissions = (...requiredPermissions) => {
@@ -8,20 +9,26 @@ const permissions = (...requiredPermissions) => {
       );
     }
 
-    const userPermissions =
-      req.user.permissions || [];
+    // Super Admin bypass (if they have '*' permission)
+    if (req.user.permissions?.includes('*')) {
+      return next();
+    }
 
-    const hasPermission =
-      requiredPermissions.every(permission =>
-        userPermissions.includes(permission)
-      );
+    const userPermissions = req.user.permissions || [];
+
+    // Check if user has any of the required permissions
+    const hasPermission = requiredPermissions.some(permission =>
+      userPermissions.includes(permission)
+    );
 
     if (!hasPermission) {
+      console.log('Permission denied:', {
+        required: requiredPermissions,
+        userPermissions: userPermissions,
+        roleName: req.user.roleName
+      });
       return next(
-        new AppError(
-          'Insufficient permissions',
-          403
-        )
+        new AppError('Insufficient permissions', 403)
       );
     }
 

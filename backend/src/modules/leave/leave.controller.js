@@ -1,26 +1,32 @@
 import * as leaveService from './leave.service.js';
 
-export const createLeave =
-  async (
-    req,
-    res,
-    next
-  ) => {
-    try {
-      const leave =
-        await leaveService.createLeave(
-          req.body,
-          req.user.id
-        );
-
-      res.status(201).json({
-        success: true,
-        data: leave
-      });
-    } catch (error) {
-      next(error);
-    }
-  };
+// backend/src/modules/leave/leave.controller.js
+export const createLeave = async (req, res, next) => {
+  try {
+    // The backend might expect employeeId from the authenticated user
+    const userId = req.user.id;
+    
+    // Or it might expect the employeeId in the body
+    const { leaveType, startDate, endDate, totalDays, reason } = req.body;
+    
+    // Make sure you're sending the right fields
+    const leave = await leaveService.createLeave({
+      employeeId: userId, // or req.body.employeeId
+      leaveType,
+      startDate,
+      endDate,
+      totalDays,
+      reason,
+    });
+    
+    res.status(201).json({
+      success: true,
+      data: leave,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const approveLeave =
   async (

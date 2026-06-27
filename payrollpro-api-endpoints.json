@@ -1,0 +1,966 @@
+{
+  "info": {
+    "name": "PayrollPro API",
+    "description": "Complete REST API for Payroll Management System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refreshToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Auto-set authorization header",
+          "if (pm.environment.get('accessToken')) {",
+          "    pm.request.headers.add({",
+          "        key: 'Authorization',",
+          "        value: 'Bearer ' + pm.environment.get('accessToken')",
+          "    });",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "🔐 Auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"admin@payroll.com\",\n    \"password\": \"Admin123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "refresh"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"currentPassword\": \"Admin123!\",\n    \"newPassword\": \"NewPass123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/change-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "change-password"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "logout"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "👥 Users",
+      "item": [
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"email\": \"john.doe@company.com\",\n    \"password\": \"Password123!\",\n    \"roleId\": \"YOUR_ROLE_ID\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/USER_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "USER_ID"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"firstName\": \"Jane\",\n    \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/USER_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "USER_ID"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Deactivate User",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/USER_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "USER_ID"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🏢 Organizations",
+      "item": [
+        {
+          "name": "Create Organization",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Tech Corp\",\n    \"code\": \"TC\",\n    \"description\": \"Technology Company\",\n    \"address\": \"123 Main St\",\n    \"phone\": \"+1234567890\",\n    \"email\": \"info@techcorp.com\",\n    \"website\": \"https://techcorp.com\",\n    \"taxId\": \"TAX123456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/organizations",
+              "host": ["{{baseUrl}}"],
+              "path": ["organizations"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Organizations",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/organizations",
+              "host": ["{{baseUrl}}"],
+              "path": ["organizations"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🏬 Departments",
+      "item": [
+        {
+          "name": "Create Department",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"organizationId\": \"YOUR_ORG_ID\",\n    \"name\": \"Engineering\",\n    \"code\": \"ENG\",\n    \"description\": \"Software Engineering Department\",\n    \"budget\": 500000\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/departments",
+              "host": ["{{baseUrl}}"],
+              "path": ["departments"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Departments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/departments?organizationId=YOUR_ORG_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["departments"],
+              "query": [
+                {
+                  "key": "organizationId",
+                  "value": "YOUR_ORG_ID"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "👔 Employees",
+      "item": [
+        {
+          "name": "Create Employee",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"firstName\": \"Alice\",\n    \"lastName\": \"Johnson\",\n    \"email\": \"alice.johnson@company.com\",\n    \"phone\": \"+1234567890\",\n    \"organizationId\": \"YOUR_ORG_ID\",\n    \"departmentId\": \"YOUR_DEPT_ID\",\n    \"position\": \"Senior Developer\",\n    \"employeeCode\": \"EMP001\",\n    \"employmentType\": \"FULL_TIME\",\n    \"startDate\": \"2024-01-01\",\n    \"salary\": 85000,\n    \"bankName\": \"Chase Bank\",\n    \"accountNumber\": \"1234567890\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/employees",
+              "host": ["{{baseUrl}}"],
+              "path": ["employees"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Employees",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/employees?departmentId=YOUR_DEPT_ID&status=ACTIVE",
+              "host": ["{{baseUrl}}"],
+              "path": ["employees"],
+              "query": [
+                {
+                  "key": "departmentId",
+                  "value": "YOUR_DEPT_ID"
+                },
+                {
+                  "key": "status",
+                  "value": "ACTIVE"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Employee by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/employees/EMPLOYEE_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["employees", "EMPLOYEE_ID"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "💰 Salary Structures",
+      "item": [
+        {
+          "name": "Create Salary Structure",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"employeeId\": \"EMPLOYEE_ID\",\n    \"baseSalary\": 85000,\n    \"allowances\": {\n        \"housing\": 12000,\n        \"transport\": 5000,\n        \"medical\": 3000\n    },\n    \"effectiveFrom\": \"2024-01-01\",\n    \"notes\": \"Annual salary review\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/salary-structures",
+              "host": ["{{baseUrl}}"],
+              "path": ["salary-structures"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Submit Salary Structure",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/salary-structures/SALARY_ID/submit",
+              "host": ["{{baseUrl}}"],
+              "path": ["salary-structures", "SALARY_ID", "submit"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Approve Salary Structure",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/salary-structures/SALARY_ID/approve",
+              "host": ["{{baseUrl}}"],
+              "path": ["salary-structures", "SALARY_ID", "approve"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Current Salary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/salary-structures/employee/EMPLOYEE_ID/current",
+              "host": ["{{baseUrl}}"],
+              "path": ["salary-structures", "employee", "EMPLOYEE_ID", "current"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📊 Attendance",
+      "item": [
+        {
+          "name": "Create Attendance",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"employeeId\": \"EMPLOYEE_ID\",\n    \"attendanceDate\": \"2024-01-15\",\n    \"status\": \"PRESENT\",\n    \"workedHours\": 8,\n    \"overtimeHours\": 1.5,\n    \"lateMinutes\": 0\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/attendance",
+              "host": ["{{baseUrl}}"],
+              "path": ["attendance"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Employee Attendance",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/attendance/employee/EMPLOYEE_ID?year=2024&month=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["attendance", "employee", "EMPLOYEE_ID"],
+              "query": [
+                {
+                  "key": "year",
+                  "value": "2024"
+                },
+                {
+                  "key": "month",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📋 Leave Management",
+      "item": [
+        {
+          "name": "Create Leave Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"employeeId\": \"EMPLOYEE_ID\",\n    \"leaveType\": \"ANNUAL\",\n    \"startDate\": \"2024-02-01\",\n    \"endDate\": \"2024-02-05\",\n    \"reason\": \"Family vacation\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/leaves",
+              "host": ["{{baseUrl}}"],
+              "path": ["leaves"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Approve Leave",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"notes\": \"Approved - Vacation approved\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/leaves/LEAVE_ID/approve",
+              "host": ["{{baseUrl}}"],
+              "path": ["leaves", "LEAVE_ID", "approve"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reject Leave",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"rejectionReason\": \"Insufficient leave balance\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/leaves/LEAVE_ID/reject",
+              "host": ["{{baseUrl}}"],
+              "path": ["leaves", "LEAVE_ID", "reject"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "💸 Deductions",
+      "item": [
+        {
+          "name": "Create Deduction",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"employeeId\": \"EMPLOYEE_ID\",\n    \"type\": \"LOAN\",\n    \"amount\": 500,\n    \"frequency\": \"MONTHLY\",\n    \"description\": \"Car loan repayment\",\n    \"effectiveFrom\": \"2024-01-01\",\n    \"effectiveTo\": \"2024-12-31\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/deductions",
+              "host": ["{{baseUrl}}"],
+              "path": ["deductions"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Activate Deduction",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/deductions/DEDUCTION_ID/activate",
+              "host": ["{{baseUrl}}"],
+              "path": ["deductions", "DEDUCTION_ID", "activate"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Employee Deductions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/deductions/employee/EMPLOYEE_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["deductions", "employee", "EMPLOYEE_ID"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📄 Payroll",
+      "item": [
+        {
+          "name": "Generate Payroll",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"employeeId\": \"EMPLOYEE_ID\",\n    \"period\": {\n        \"year\": 2024,\n        \"month\": 1\n    },\n    \"notes\": \"January 2024 payroll\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/payroll/generate",
+              "host": ["{{baseUrl}}"],
+              "path": ["payroll", "generate"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Submit Payroll",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/payroll/PAYROLL_ID/submit",
+              "host": ["{{baseUrl}}"],
+              "path": ["payroll", "PAYROLL_ID", "submit"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Approve Payroll",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/payroll/PAYROLL_ID/approve",
+              "host": ["{{baseUrl}}"],
+              "path": ["payroll", "PAYROLL_ID", "approve"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Process Payroll",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/payroll/PAYROLL_ID/process",
+              "host": ["{{baseUrl}}"],
+              "path": ["payroll", "PAYROLL_ID", "process"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mark Payroll as Paid",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"paymentReference\": \"PAY-2024-001\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/payroll/PAYROLL_ID/paid",
+              "host": ["{{baseUrl}}"],
+              "path": ["payroll", "PAYROLL_ID", "paid"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Payroll Records",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/payroll?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["payroll"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🧾 Payslips",
+      "item": [
+        {
+          "name": "Generate Payslip",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"payrollId\": \"PAYROLL_ID\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/payslips/generate",
+              "host": ["{{baseUrl}}"],
+              "path": ["payslips", "generate"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Payslips",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/payslips?employeeId=EMPLOYEE_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["payslips"],
+              "query": [
+                {
+                  "key": "employeeId",
+                  "value": "EMPLOYEE_ID"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Download Payslip",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/payslips/PAYSLIP_ID/download",
+              "host": ["{{baseUrl}}"],
+              "path": ["payslips", "PAYSLIP_ID", "download"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📬 Notifications",
+      "item": [
+        {
+          "name": "Get Notifications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notifications?read=false&page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["notifications"],
+              "query": [
+                {
+                  "key": "read",
+                  "value": "false"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mark Notification as Read",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notifications/NOTIFICATION_ID/read",
+              "host": ["{{baseUrl}}"],
+              "path": ["notifications", "NOTIFICATION_ID", "read"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mark All Notifications as Read",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notifications/mark-all-read",
+              "host": ["{{baseUrl}}"],
+              "path": ["notifications", "mark-all-read"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📊 Reports",
+      "item": [
+        {
+          "name": "Payroll Summary Report",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reports/payroll-summary?organizationId=YOUR_ORG_ID&year=2024&month=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["reports", "payroll-summary"],
+              "query": [
+                {
+                  "key": "organizationId",
+                  "value": "YOUR_ORG_ID"
+                },
+                {
+                  "key": "year",
+                  "value": "2024"
+                },
+                {
+                  "key": "month",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Department Payroll Report",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reports/department-payroll?organizationId=YOUR_ORG_ID&year=2024&month=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["reports", "department-payroll"],
+              "query": [
+                {
+                  "key": "organizationId",
+                  "value": "YOUR_ORG_ID"
+                },
+                {
+                  "key": "year",
+                  "value": "2024"
+                },
+                {
+                  "key": "month",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📝 Audit Logs",
+      "item": [
+        {
+          "name": "Get Audit Logs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/audit?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["audit"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Audit Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/audit/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["audit", "stats"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

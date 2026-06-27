@@ -23,7 +23,7 @@ router.use('/users', userRoutes);
 router.use('/employees', employeeRoutes);
 router.use('/departments', departmentRoutes);
 router.use('/payrolls', payrollRoutes);
-router.use('/leave-requests', leaveRoutes);
+router.use('/leaves', leaveRoutes);
 router.use('/deductions', deductionRoutes);
 router.use('/roles', roleRoutes);
 router.use('/users', userRoutes);

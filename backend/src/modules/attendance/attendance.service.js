@@ -1,101 +1,96 @@
+// backend/src/modules/attendance/attendance.service.js
 import Attendance from './attendance.model.js';
 import AppError from '../../shared/errors/AppError.js';
 
-const calculateWorkedHours = (
-  clockInAt,
-  clockOutAt
-) => {
-  if (
-    !clockInAt ||
-    !clockOutAt
-  ) {
-    return 0;
+// ADD THIS FUNCTION
+export const getAttendances = async (query = {}) => {
+  try {
+    const attendances = await Attendance.find(query)
+      .populate('employeeId', 'firstName lastName email')
+      .sort({ attendanceDate: -1 });
+    return attendances;
+  } catch (error) {
+    throw error;
   }
-
-  const diff =
-    new Date(clockOutAt) -
-    new Date(clockInAt);
-
-  return Number(
-    (diff / 3600000).toFixed(2)
-  );
 };
 
-export const createAttendance =
-  async (
-    payload,
-    userId
-  ) => {
-    const workedHours =
-      calculateWorkedHours(
-        payload.clockInAt,
-        payload.clockOutAt
-      );
-
-    return Attendance.create({
-      ...payload,
-      workedHours,
-      createdBy: userId
+export const createAttendance = async (data, userId) => {
+  try {
+    const attendance = new Attendance({
+      ...data,
+      employeeId: userId,
     });
-  };
+    await attendance.save();
+    return attendance;
+  } catch (error) {
+    throw error;
+  }
+};
 
-export const submitAttendance =
-  async (id) => {
-    return Attendance.findByIdAndUpdate(
-      id,
-      {
-        workflowStatus:
-          'SUBMITTED'
-      },
-      {
-        new: true
-      }
-    );
-  };
+export const submitAttendance = async (id) => {
+  try {
+    const attendance = await Attendance.findById(id);
+    if (!attendance) {
+      throw new AppError('Attendance not found', 404);
+    }
+    attendance.workflowStatus = 'SUBMITTED';
+    await attendance.save();
+    return attendance;
+  } catch (error) {
+    throw error;
+  }
+};
 
-export const approveAttendance =
-  async (
-    id,
-    userId
-  ) => {
-    return Attendance.findByIdAndUpdate(
-      id,
-      {
-        workflowStatus:
-          'APPROVED',
-        approvedBy: userId,
-        approvedAt: new Date()
-      },
-      {
-        new: true
-      }
-    );
-  };
+export const approveAttendance = async (id, userId) => {
+  try {
+    const attendance = await Attendance.findById(id);
+    if (!attendance) {
+      throw new AppError('Attendance not found', 404);
+    }
+    attendance.workflowStatus = 'APPROVED';
+    attendance.approvedBy = userId;
+    attendance.approvedAt = new Date();
+    await attendance.save();
+    return attendance;
+  } catch (error) {
+    throw error;
+  }
+};
 
-export const lockAttendance =
-  async (id) => {
-    return Attendance.findByIdAndUpdate(
-      id,
-      {
-        workflowStatus:
-          'LOCKED'
-      },
-      {
-        new: true
-      }
-    );
-  };
+export const lockAttendance = async (id) => {
+  try {
+    const attendance = await Attendance.findById(id);
+    if (!attendance) {
+      throw new AppError('Attendance not found', 404);
+    }
+    attendance.workflowStatus = 'LOCKED';
+    attendance.isPayrollProcessed = true;
+    await attendance.save();
+    return attendance;
+  } catch (error) {
+    throw error;
+  }
+};
 
-export const getEmployeeAttendance =
-  async (employeeId) => {
-    return Attendance.find({
-      employeeId
-    }).sort({
-      attendanceDate: -1
-    });
-  };
+export const getEmployeeAttendance = async (employeeId) => {
+  try {
+    const attendances = await Attendance.find({ employeeId })
+      .sort({ attendanceDate: -1 });
+    return attendances;
+  } catch (error) {
+    throw error;
+  }
+};
 
-export const getAttendanceById =
-  async (id) => {
-    return Attendance.findById(id);
-  };
+export const getAttendanceById = async (id) => {
+  try {
+    const attendance = await Attendance.findById(id)
+      .populate('employeeId', 'firstName lastName email');
+    if (!attendance) {
+      throw new AppError('Attendance not found', 404);
+    }
+    return attendance;
+  } catch (error) {
+    throw error;
+  }
+};
